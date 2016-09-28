@@ -8,18 +8,18 @@ Based on the idea of proquints (http://arXiv.org/html/0901.4016).
 
 Usage:
 
-python gibber.py -r BITCOUNT
+python gibber.py -r BITCOUNT [-p PHRASE]
 
 Generates a random phrase of atleast BITCOUNT bit entropy
 (uses os.urandom to generate the random number)
 
-python gibber.py -h HEXNUM
+python gibber.py -h HEXNUM [-p PHRASE]
 
 Converts given hexadecimal number (for example, 8ABEF00B) into a phrase.
 
 The generated gibberish will have a capital letter, a number and a character.
 
-A phrase consists of the following reserved letters:
+A PHRASE consists of the following reserved letters:
 * c - one of 16 consonants (4 bits entropy)
 * v - one of 4 vowels (2 bits entropy)
 * y - one of 8 double vowels (3 bits entropy)
