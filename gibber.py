@@ -101,9 +101,11 @@ class Gibber:
 
 #the main method generates a gibber word from a given value of given bits count
   def rand(self, bits):
-    bytes = (int(bits) + 7) / 8 #round bits up
-    z=os.urandom(bytes).encode("hex") #https://docs.python.org/3/library/os.html#os.urandom
-    v=long(z,16)
+    bytes = (int(bits) + 7) // 8 #round bits up
+    z=os.urandom(bytes) #https://docs.python.org/3/library/os.html#os.urandom
+    v = 0
+    for b in z:
+        v = v * 256 + b;
     return v
 #
 ##################
