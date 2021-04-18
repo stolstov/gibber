@@ -3,12 +3,13 @@
 import sys
 import os
 import math
+from builtins import bytes
 
 #A phrase consists of the following reserved letters:
 #c - one of 16 consonants (4 bits entropy)
 #v - one of 4 vowels (2 bits entropy)
 #y - one of 8 double vowels (3 bits entropy)
-#d - one of 16 composite consonants from eastern european languages (4 bits entropy)
+#d - one of 16 composite consonants to make a sound from eastern european languages (4 bits entropy)
 #z - 0 or 1 (1 bit entropy)
 #n - one of 16 easy to remember two digit numbers (4 bits entropy)
 #p - one of 8 punctuation signs (3 bits entropy)
@@ -101,10 +102,10 @@ class Gibber:
 
 #the main method generates a gibber word from a given value of given bits count
   def rand(self, bits):
-    bytes = (int(bits) + 7) // 8 #round bits up
-    z=os.urandom(bytes) #https://docs.python.org/3/library/os.html#os.urandom
+    num_bytes = (int(bits) + 7) // 8 #round bits up
+    z=os.urandom(num_bytes) #https://docs.python.org/3/library/os.html#os.urandom
     v = 0
-    for b in z:
+    for b in bytes(z):
         v = v * 256 + b;
     return v
 #
@@ -114,15 +115,38 @@ class Gibber:
 
 def usage():
   print("Usage:")
-  print(">>gibber -h HEXVALUE [-p PHRASE]")
+  print(">>gibber.py -h HEXVALUE [-p PHRASE]")
   print("Generates a gibberish where HEXVALUE is a hexadecimal value.")
-  print(">>proquints.py -r NUM [-p PHRASE]")
+  print(">>gibber.py -r NUM [-p PHRASE]")
   print("Generates a random gibberish from a random NUM bit integer.")
-  print("Where PHRASE is the gibberish forming phrase.")
+  print("Where PHRASE is the gibberish forming phrase. Default phrase is Dvcvc{Cvcvc}")
   print("For example, a proquint forming phraze: cvcvc{-cvcvc},")
   print("             some sentence phrase: Cvcvc a cvcv vcvc{ cvcvc},")
   print("             a phrase with a two digit number")
   print("             and punctuation (39 bits): CvcvcCvcvcnp.")
+  print("A phrase consists of the following reserved letters:")
+  print("c - one of 16 consonants (4 bits entropy)")
+  print("v - one of 4 vowels (2 bits entropy)")
+  print("y - one of 8 double vowels (3 bits entropy)")
+  print("d - one of 16 composite consonants to make a sound from eastern european languages (4 bits entropy)")
+  print("z - 0 or 1 (1 bit entropy)")
+  print("n - one of 16 easy to remember two digit numbers (4 bits entropy)")
+  print("p - one of 8 punctuation signs (3 bits entropy)")
+  print("{ - reserved, see below")
+  print("} - reserved, see below")
+  print("The reserved symbols can be in the upper case, indicating an upper case symbol.")
+  print("Any other symbol (including a space) will be added as is.")
+  print("For example,")
+  print("Cvcvc dycv n a p")
+  print("may correspond to")
+  print("Faval frini 66 a ?")
+  print("or")
+  print("Muwol rvyujo 60 a *")
+  print("The opening and closing curly brackets are reserved to form a repeated word.")
+  print("For example,")
+  print("V{c}")
+  print(" can make the following phrase, consisting of on vowel and different consonants (66 bits):")
+  print("Ojznjzksgnwhntggd")
   exit()
 
 
@@ -135,13 +159,21 @@ bits = -1
 value = 0
 hexvalue = ""
 i = 1
-while i < len(sys.argv):
+arg_len =len(sys.argv)
+if (arg_len == 1):
+  usage()
+  
+while i < arg_len:
   if sys.argv[i] == "-r":
     bits = int(sys.argv[i+1])
     value = proq.rand(bits)
     i += 2
   elif sys.argv[i] == "-h":
-    hexvalue = sys.argv[i+1].lower()
+    if (i + 1 < arg_len):
+      hexvalue = sys.argv[i+1].lower()
+    else:
+      usage()
+      
     i += 2
   elif sys.argv[i] == "-p":
     phrase = sys.argv[i+1]
@@ -165,11 +197,11 @@ if bits <= -1:
     except ValueError:
       i
 
-  print ("fixed gibber from: " + hex(value))
+  print ("User number: " + hex(value))
 else:
-  print("random gibber: " + hex(value))
+  print("Random number: " + hex(value))
 
 print("bits: "+str(bits))
 
-print (proq.generate(phrase, value, bits))
+print ("Result gibber: " + proq.generate(phrase, value, bits))
 print ("result bits: " + str(proq.total_bits))
